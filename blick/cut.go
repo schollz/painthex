@@ -1,15 +1,18 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/jpeg"
 	"image/png"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/go-playground/colors"
 	"github.com/oliamb/cutter"
@@ -20,27 +23,39 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	colorMap := make(map[string]string)
 	for i, inPath := range jpgFiles {
-		fmt.Println(inPath)
-		if i > 0 {
-			break
-		}
-		err = crop(inPath, inPath+".1.png", image.Point{60, 300})
+		fmt.Println(i, inPath)
+		colorName := strings.Split(inPath, "_")[1]
+		var hexString string
+		hexString, err = crop(inPath, inPath+".1.png", image.Point{60, 300})
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = crop(inPath, inPath+".2.png", image.Point{500, 300})
+		colorMap[colorName+"0"] = hexString
+		hexString, err = crop(inPath, inPath+".2.png", image.Point{500, 300})
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = crop(inPath, inPath+".3.png", image.Point{900, 700})
+		colorMap[colorName+"1"] = hexString
+		hexString, err = crop(inPath, inPath+".3.png", image.Point{900, 700})
 		if err != nil {
 			log.Fatal(err)
 		}
+		colorMap[colorName+"2"] = hexString
+	}
+
+	colorMapBytes, err := json.MarshalIndent(colorMap, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = ioutil.WriteFile("blick.json", colorMapBytes, 0644)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
-func crop(inPath string, outPath string, tlPoint image.Point) (err error) {
+func crop(inPath string, outPath string, tlPoint image.Point) (hexString string, err error) {
 	fi, err := os.Open(inPath)
 	if err != nil {
 		return
@@ -76,7 +91,7 @@ func crop(inPath string, outPath string, tlPoint image.Point) (err error) {
 	if err != nil {
 		return
 	}
-	fmt.Println(rgb.ToHEX().String())
+	hexString = rgb.ToHEX().String()
 	return
 }
 
