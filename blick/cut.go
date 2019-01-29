@@ -129,3 +129,22 @@ func imageToRGBA(src image.Image) *image.RGBA {
 	draw.Draw(dst, dst.Rect, src, image.ZP, draw.Src)
 	return dst
 }
+
+type ColorPalette struct {
+	colorsNameLookupMap map[string]string
+	colorsHexString     []string
+	colorsRGB           []color.NRGBA
+}
+
+func FromNameMap(nameToHex map[string]string) (cp *ColorPalette, err error) {
+	cp = new(ColorPalette)
+	cp.colorsNameLookupMap = make(map[string]string)
+	for name := range nameToHex {
+		cp.colorsNameLookupMap[nameToHex[name]] = name
+	}
+	return
+}
+
+func ClosestColor(r, g, b uint8) (rc, gc, bc uint) {
+	return
+}
