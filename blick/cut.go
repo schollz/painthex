@@ -7,23 +7,29 @@ import (
 	"image/png"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/oliamb/cutter"
 )
 
 func main() {
-	inPath := "01637_DeepViolet_6610-l.jpg"
-	err := crop(inPath, "1.png", image.Point{60, 300})
+	jpgFiles, err := filepath.Glob("*_*_*.jpg")
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = crop(inPath, "2.png", image.Point{500, 300})
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = crop(inPath, "3.png", image.Point{900, 700})
-	if err != nil {
-		log.Fatal(err)
+	for _, inPath := range jpgFiles {
+		err = crop(inPath, inPath+".1.png", image.Point{60, 300})
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = crop(inPath, inPath+".2.png", image.Point{500, 300})
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = crop(inPath, inPath+".3.png", image.Point{900, 700})
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
