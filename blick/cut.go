@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/colors"
+	colorful "github.com/lucasb-eyer/go-colorful"
 	"github.com/oliamb/cutter"
 )
 
@@ -36,7 +37,7 @@ func main() {
 	for i, inPath := range jpgFiles {
 		fmt.Println(i, inPath)
 		colorName := strings.Split(inPath, "_")[1]
-		color := Color{Name: colorName, Path: template.HTMLAttr(filepath.ToSlash(inPath)), Hexes: []string{"", "", ""}}
+		color := Color{Name: colorName, Path: template.HTMLAttr(filepath.ToSlash(inPath)), Hexes: []string{"", "", "", "", ""}}
 		var hexString string
 		hexString, err = crop(inPath, inPath+".1.png", image.Point{60, 300})
 		if err != nil {
@@ -56,6 +57,13 @@ func main() {
 		}
 		colorMap[colorName+"2"] = hexString
 		color.Hexes[2] = hexString
+		c1, _ := colorful.Hex("#ffffff")
+		c2, _ := colorful.Hex(hexString)
+		c3 := c1.BlendRgb(c2, 0.5)
+		color.Hexes[3] = c3.Hex()
+
+		c3 = c1.BlendRgb(c3, 0.5)
+		color.Hexes[4] = c3.Hex()
 		colors = append(colors, color)
 	}
 
@@ -85,8 +93,8 @@ func main() {
 			name := ""
 			if i == 0 {
 				name = "Heavy"
-			} else if i == 2 {
-				name = "Light"
+			} else if i >= 2 {
+				name = fmt.Sprintf("Light%d", i)
 			}
 			palette += fmt.Sprintf("%s%s\t\t%s\n", color.Name, name, hex)
 		}
@@ -478,9 +486,9 @@ max-width: 100vw;
 				<div class='lg=col-4'><img src="{{.Path}}.3.png" width=120></div>
 		</div>
 		<div class='col-row'>
-			<div class='lg=col-4'><div style="float:left;width:120px;height:120px;background:{{index .Hexes 0}};"></div></div>
-			<div class='lg=col-4'><div style="float:left;width:120px;height:120px;background:{{index .Hexes 1}};"></div></div>
-			<div class='lg=col-4'><div style="float:left;width:120px;height:120px;background:{{index .Hexes 2}};"></div></div>
+			{{ range .Hexes}}
+			<div class='lg=col-4'><div style="float:left;width:120px;height:120px;background:{{.}};"></div></div>
+			{{ end}}
 		</div>
 		{{ end }}
 </body>
