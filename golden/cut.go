@@ -39,7 +39,7 @@ func main() {
 		colorName := strings.Split(inPath, "_")[1]
 		color := Color{Name: colorName, Path: template.HTMLAttr(filepath.ToSlash(inPath)), Hexes: []string{"", "", "", "", ""}}
 		var hexString string
-		hexString, err = crop(inPath, inPath+".1.png", image.Point{120, 50})
+		hexString, err = crop(inPath, inPath+".1.png", image.Point{150, 50})
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -51,7 +51,7 @@ func main() {
 		}
 		colorMap[colorName+"1"] = hexString
 		color.Hexes[1] = hexString
-		hexString, err = crop(inPath, inPath+".3.png", image.Point{900, 50})
+		hexString, err = crop(inPath, inPath+".3.png", image.Point{800, 50})
 		if err != nil {
 			log.Fatal(err)
 		}
